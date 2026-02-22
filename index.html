@@ -457,14 +457,49 @@ function fx(el) {
   document.getElementById('mIn').focus();
 }
 
-// ── API ──
+// ── API (DEMO MODE) ──
 async function callAI(msgs, sys, tok=1600) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:tok, system:sys, messages:msgs})
+  // असली AI जैसा महसूस कराने के लिए 2 सेकंड का इंतज़ार
+  await new Promise(r => setTimeout(r, 2000)); 
+  
+  // अगर यूजर से सवाल पूछने वाला स्टेप है (Step 1)
+  if (msgs[0].content.includes('targeted clarifying questions')) {
+    return JSON.stringify([
+      {"id":"q1","question":"Aapka budget kitna hai?","type":"options","options":["₹0 - ₹10k","₹10k - ₹50k","₹50k+"],"placeholder":""},
+      {"id":"q2","question":"Daily kitne ghante de sakte hain?","type":"text","options":[],"placeholder":"E.g. 3 hours daily"},
+      {"id":"q3","question":"Pehle koi experience hai?","type":"options","options":["Yes","No"],"placeholder":""},
+      {"id":"q4","question":"Aapka main goal kya hai?","type":"text","options":[],"placeholder":"E.g. Passive Income"}
+    ]);
+  }
+  
+  // अगर फाइनल रिजल्ट दिखाने वाला स्टेप है (Step 2)
+  return JSON.stringify({
+    "title": "Strategy for Success (Demo)",
+    "summary": "Ye aapka personalized roadmap hai jo demo mode mein chal raha hai. Iska UI check karein!",
+    "plan30": [
+      {"week":"Week 1","title":"Research Phase","detail":"Sari basic jankari ikatha karein."},
+      {"week":"Week 2","title":"Learning","detail":"Skill seekhne par dhyan dein."},
+      {"week":"Week 3","title":"Setup","detail":"Jaruri tools setup karein."},
+      {"week":"Week 4","title":"Testing","detail":"Pehla trial karein."}
+    ],
+    "plan90": [
+      {"month":"Month 1","title":"Building","detail":"Kaam shuru karein."},
+      {"month":"Month 2","title":"Optimization","detail":"Galtiyon ko sudharein."},
+      {"month":"Month 3","title":"Scaling","detail":"Bade level par jayein."}
+    ],
+    "dailyTasks": [
+      {"time":"7:00 AM","task":"Learning","duration":"1 hr"},
+      {"time":"10:00 AM","task":"Work","duration":"3 hr"},
+      {"time":"8:00 PM","task":"Review","duration":"30 min"}
+    ],
+    "warnings": [
+      {"title":"Consistency","detail":"Beech mein mat chhodein."},
+      {"title":"Focus","detail":"Distractions se bachein."}
+    ],
+    "backupPlan": [
+      {"title":"Alternative","detail":"Freelancing start karein."}
+    ]
   });
-  if(!r.ok) throw new Error('API '+r.status);
-  return (await r.json()).content[0].text;
 }
 
 // ── STEP 1 ──
